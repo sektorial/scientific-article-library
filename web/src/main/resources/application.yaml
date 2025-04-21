@@ -1,0 +1,5 @@
+spring:
+  freemarker:
+    template-loader-path: classpath:/templates
+    expose-request-attributes: on
+    suffix: .ftlh

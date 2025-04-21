@@ -1,4 +1,4 @@
-package ua.com.ivolnov.sci_article_library.web;
+package ua.com.ivolnov.sci_article_library;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
