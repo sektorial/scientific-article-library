@@ -1,4 +1,4 @@
-package ua.com.ivolnov.sci_article_library;
+package ua.com.ivolnov.sci_article_library.web;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
