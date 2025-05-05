@@ -8,7 +8,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 @Configuration
 @RequiredArgsConstructor
-public class FreemarkerConfiguration {
+class FreemarkerConfiguration {
 
     private final FreeMarkerConfigurer freeMarkerConfigurer;
 

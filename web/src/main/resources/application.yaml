@@ -3,3 +3,7 @@ spring:
     template-loader-path: classpath:/templates
     expose-request-attributes: on
     suffix: .ftlh
+
+springdoc:
+  api-docs:
+    path: /api-docs

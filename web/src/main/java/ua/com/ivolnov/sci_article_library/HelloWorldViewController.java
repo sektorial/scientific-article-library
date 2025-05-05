@@ -1,18 +1,17 @@
 package ua.com.ivolnov.sci_article_library;
 
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@RestController
+@RequestMapping("/web")
+@Controller
 public class HelloWorldViewController {
 
-    @GetMapping("/")
+    @GetMapping("/article")
     public ModelAndView index() {
-        ModelAndView modelAndView = new ModelAndView("index/index");
-        // add title to Model
-        modelAndView.addObject("msg", "Hello");
-        return modelAndView;
+        return new ModelAndView("article/index");
     }
 
 }
