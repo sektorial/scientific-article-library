@@ -1,5 +1,63 @@
 // Wait for the DOM to be ready
+const formBackdrop = 'form-backdrop';
+const addArticleForm = 'add-article-form';
+const addArticleFormContainer = 'add-article-form-container';
+const addArticleButton = 'add-article-button';
+const cancelAdd = 'cancel-add';
+const editArticleForm = 'edit-article-form';
+const editArticleFormContainer = 'edit-article-form-container';
+const cancelEdit = 'cancel-edit';
+
+const addFormTitle = 'add-article-form-title';
+const addFormAuthors = 'add-article-form-authors';
+const addFormJournal = 'add-article-form-journal';
+const addFormYear = 'add-article-form-year';
+
+const editFormUuid = 'edit-article-form-uuid';
+const editFormTitle = 'edit-article-form-title';
+const editFormAuthors = 'edit-article-form-authors';
+const editFormJournal = 'edit-article-form-journal';
+const editFormYear = 'edit-article-form-year';
+
 document.addEventListener('DOMContentLoaded', function () {
+
+    const addBtnElement = document.getElementById(addArticleButton);
+    const cancelAddBtnElement = document.getElementById(cancelAdd);
+    const backdropElement = document.getElementById(formBackdrop);
+    const addArticleFormElement = document.getElementById(addArticleForm);
+    addBtnElement.addEventListener('click', showAddForm);
+    cancelAddBtnElement.addEventListener('click', hideAddForm);
+    backdropElement.addEventListener('click', hideAddForm);
+
+    addArticleFormElement.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const newData = {
+            title: document.getElementById(addFormTitle).value.trim(),
+            authors: document.getElementById(addFormAuthors).value.trim(),
+            journal: document.getElementById(addFormJournal).value.trim(),
+            year: parseInt(document.getElementById(addFormYear).value, 10),
+        };
+        // call your POST helper
+        addArticleData(newData);
+    });
+
+    const cancelEditBtnElement = document.getElementById(cancelEdit);
+    const editArticleFormElement = document.getElementById(editArticleForm);
+
+    cancelEditBtnElement.addEventListener('click', hideEditForm);
+
+    editArticleFormElement.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const updatedData = {
+            uuid: document.getElementById(editFormUuid).value.trim(),
+            title: document.getElementById(editFormTitle).value.trim(),
+            authors: document.getElementById(editFormAuthors).value.trim(),
+            journal: document.getElementById(editFormJournal).value.trim(),
+            year: parseInt(document.getElementById(editFormYear).value, 10),
+        };
+        // call your POST helper
+        updateArticleData(updatedData);
+    });
 
     // --- Define Table Columns ---
     // Adjust 'field' to match the property names in your ScientificArticle domain object
@@ -16,7 +74,6 @@ document.addEventListener('DOMContentLoaded', function () {
             field: 'title',
             widthGrow: 3,
             editor: 'input',
-            editorParams: { placeholder: "Enter article title…" },
             headerFilter: 'input'
         }, // 'title' field, editable input
         {
@@ -24,7 +81,6 @@ document.addEventListener('DOMContentLoaded', function () {
             field: 'authors',
             widthGrow: 2,
             editor: 'input',
-            editorParams: { placeholder: "Lastname, Firstname; …" },
             headerFilter: 'input'
         }, // 'authors' field
         {
@@ -32,29 +88,48 @@ document.addEventListener('DOMContentLoaded', function () {
             field: 'journal',
             widthGrow: 2,
             editor: 'input',
-            editorParams: { placeholder: "Journal name" },
             headerFilter: 'input'
         }, // 'journal' field
         {
             title: 'Year',
-            field: 'publicationYear',
+            field: 'year',
             width: 100,
             hozAlign: 'center',
             editor: 'input',
-            editorParams: { placeholder: "YYYY" },
             sorter: 'number',
             headerFilter: 'input'
-        }, // 'publicationYear' field
+        }, // 'year' field
         // --- Add Action Buttons ---
         {
             title: 'Actions',
             hozAlign: 'center',
             formatter: function (cell, formatterParams, onRendered) {
-                // Create buttons dynamically
-                const uuid = cell.getRow().getData().uuid; // Get the UUID for this row
-                const editButton = `<button onclick="editArticle('${uuid}')">Edit</button>`;
-                const deleteButton = `<button onclick="deleteArticle('${uuid}')">Delete</button>`;
-                return editButton + '&nbsp;' + deleteButton; // Return HTML string for buttons
+                // grab the row’s data object
+                const rowData = cell.getRow().getData();
+
+                // make a container for the buttons
+                const container = document.createElement('span');
+
+                // — Edit button —
+                const editBtn = document.createElement('button');
+                editBtn.textContent = 'Edit';
+                editBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showEditForm(rowData);
+                });
+                container.appendChild(editBtn);
+
+                // small spacer
+                container.appendChild(document.createTextNode(' '));
+
+                // — Delete button —
+                const delBtn = document.createElement('button');
+                delBtn.textContent = 'Delete';
+                delBtn.addEventListener('click', () => deleteArticle(rowData.uuid));
+                container.appendChild(delBtn);
+
+                // return the element; Tabulator will insert it into the cell
+                return container;
             },
             cellClick: function (e, cell) {
                 // Prevent click event from triggering edit on the action cell itself
@@ -81,16 +156,6 @@ document.addEventListener('DOMContentLoaded', function () {
             // You MUST now trigger the update to the backend here if using inline editing directly
             updateArticleData(cell.getRow().getData()); // See function below
         }
-    });
-
-    // --- Handle Add Button Click ---
-    document.getElementById('add-article-button').addEventListener('click', function () {
-        // Option 1: Add a blank row directly for inline editing
-        // table.addRow({}, true); // Add to top
-
-        // Option 2: Show a modal/form (Recommended for better UX)
-        alert('Show Add Article Form/Modal Here!');
-        // When form is submitted, call addArticleData(newData);
     });
 
 }); // End DOMContentLoaded
@@ -120,11 +185,12 @@ function addArticleData(articleData) {
             // Tabulator might add the row automatically if configured, otherwise:
             Tabulator.findTable('#article-table')[0].setData(); // Reload data
             // Or: Tabulator.findTable("#article-table")[0].addRow(newArticle, true); // Add row directly
-            alert('Article added!'); // Close modal etc.
+            hideAddForm();
         })
         .catch(error => {
             console.error('Error adding article:', error);
             alert('Error adding article. See console for details.');
+            hideAddForm();
         });
 }
 
@@ -139,6 +205,7 @@ function updateArticleData(updatedRowData) {
     }
     console.log(`Updating article ${articleId}:`, updatedRowData);
 
+    const tableElement = Tabulator.findTable('#article-table')[0];
     fetch(`/api/article/${articleId}`, {
         method: 'PUT',
         headers: {
@@ -159,25 +226,15 @@ function updateArticleData(updatedRowData) {
             console.log('Article updated successfully:', updatedArticle);
             // Tabulator's inline edit might already reflect the change visually.
             // If using a modal, you might need to refresh the row or table:
-            // Tabulator.findTable("#article-table")[0].updateRow(articleId, updatedArticle); // Update specific row
-            alert('Article updated!'); // Or close modal
+            tableElement.updateRow(articleId, updatedArticle); // Update specific row
+            hideEditForm();
         })
         .catch(error => {
             console.error('Error updating article:', error);
             alert('Error updating article. See console for details.');
-            // Optional: Revert the cell's value in Tabulator if the backend update failed
-            // table.getRow(articleId).getCell(cell.getField()).setValue(cell.getOldValue());
+            hideEditForm();
         });
 }
-
-// Function called by the Edit button in the actions column
-function editArticle(uuid) {
-    alert(`Show Edit Form/Modal for Article UUID: ${uuid}`);
-    // 1. Fetch full article data? GET /api/article/{uuid} (optional)
-    // 2. Populate a modal/form with data.
-    // 3. On form submit, call updateArticleData(updatedData);
-}
-
 
 // Function called by the Delete button in the actions column
 function deleteArticle(uuid) {
@@ -203,13 +260,41 @@ function deleteArticle(uuid) {
                 // Remove the row from the table
                 const table = Tabulator.findTable('#article-table')[0];
                 table.deleteRow(uuid);
-                alert('Article deleted!');
             })
             .catch(error => {
                 console.error('Error deleting article:', error);
                 alert('Error deleting article. See console for details.');
             });
     }
+}
+
+// Modal show/hide helpers
+
+function showAddForm() {
+    document.getElementById(formBackdrop).style.display = 'block';
+    document.getElementById(addArticleFormContainer).style.display = 'block';
+}
+
+function hideAddForm() {
+    document.getElementById(formBackdrop).style.display = 'none';
+    document.getElementById(addArticleFormContainer).style.display = 'none';
+    document.getElementById(addArticleForm).reset();
+}
+
+function showEditForm(rowData) {
+    document.getElementById(formBackdrop).style.display = 'block';
+    document.getElementById(editFormUuid).value = rowData.uuid;
+    document.getElementById(editFormTitle).value = rowData.title;
+    document.getElementById(editFormAuthors).value = rowData.authors;
+    document.getElementById(editFormJournal).value = rowData.journal;
+    document.getElementById(editFormYear).value = rowData.year;
+    document.getElementById(editArticleFormContainer).style.display = 'block';
+}
+
+function hideEditForm() {
+    document.getElementById(formBackdrop).style.display = 'none';
+    document.getElementById(editArticleFormContainer).style.display = 'none';
+    document.getElementById(editArticleForm).reset();
 }
 
 // Example function to get CSRF token if using Spring Security

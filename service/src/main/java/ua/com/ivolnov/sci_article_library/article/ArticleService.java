@@ -29,7 +29,8 @@ class ArticleService {
 
     public ScientificArticle create(final ScientificArticle article) {
         final String newArticleUuid = UUID.randomUUID().toString();
-        final ScientificArticle newArticle = new ScientificArticle(newArticleUuid, article.title());
+        final ScientificArticle newArticle = new ScientificArticle(newArticleUuid, article.title(), article.authors(),
+                article.journal(), article.year());
         ARTICLES.put(newArticleUuid, newArticle);
         return newArticle;
     }
@@ -49,6 +50,7 @@ class ArticleService {
     @PostConstruct
     public void init() {
         final String uuid = UUID.randomUUID().toString();
-        ARTICLES.put(uuid, new ScientificArticle(uuid, "Article " + LocalDateTime.now()));
+        final LocalDateTime now = LocalDateTime.now();
+        ARTICLES.put(uuid, new ScientificArticle(uuid, "Article " + now, "John Doe", "Some journal " + now, "1999"));
     }
 }
