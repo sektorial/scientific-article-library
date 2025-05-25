@@ -5,5 +5,5 @@ import lombok.With;
 
 @With
 @Builder
-record ScientificArticle(String uuid, String title, String authors, String journal, String year) {
+record ScientificArticleDto(String uuid, String title, String authors, String journal, String year) {
 }
