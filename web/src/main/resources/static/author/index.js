@@ -1,69 +1,29 @@
 const formBackdrop = 'form-backdrop';
 
-const addArticleFormContainer = 'add-article-form-container';
-const addArticleForm = 'add-article-form';
-const addArticleButton = 'add-article-button';
-const addFormTitle = 'add-article-form-title';
-const addFormAuthors = 'add-article-form-authors';
-const addFormJournal = 'add-article-form-journal';
-const addFormYear = 'add-article-form-year';
+const addAuthorFormContainer = 'add-author-form-container';
+const addAuthorForm = 'add-author-form';
+const addAuthorButton = 'add-author-button';
+const addFormFirstName = 'add-author-form-first-name';
+const addFormLastName = 'add-author-form-last-name';
 const cancelAdd = 'cancel-add';
-
-const editArticleFormContainer = 'edit-article-form-container';
-const editArticleForm = 'edit-article-form';
-const editFormId = 'edit-article-form-id';
-const editFormTitle = 'edit-article-form-title';
-const editFormAuthors = 'edit-article-form-authors';
-const editFormJournal = 'edit-article-form-journal';
-const editFormYear = 'edit-article-form-year';
-const cancelEdit = 'cancel-edit';
-
-const viewArticleFormContainer = 'view-article-form-container';
-const viewArticleForm = 'view-article-form';
-const viewArticleFormId = 'view-article-form-id';
-const viewArticleFormTitle = 'view-article-form-title';
-const viewArticleFormAuthors = 'view-article-form-authors';
-const viewArticleFormJournal = 'view-article-form-journal';
-const viewArticleFormYear = 'view-article-form-year';
-const closeView = 'close-view';
 
 document.addEventListener('DOMContentLoaded', () => {
     const backdropElement = document.getElementById(formBackdrop);
     backdropElement.addEventListener('click', hideAddForm);
 
-    const addBtnElement = document.getElementById(addArticleButton);
+    const addBtnElement = document.getElementById(addAuthorButton);
     addBtnElement.addEventListener('click', showAddForm);
     const cancelAddBtnElement = document.getElementById(cancelAdd);
     cancelAddBtnElement.addEventListener('click', hideAddForm);
-    const addArticleFormElement = document.getElementById(addArticleForm);
-    addArticleFormElement.addEventListener('submit', function (e) {
+    const addAuthorFormElement = document.getElementById(addAuthorForm);
+    addAuthorFormElement.addEventListener('submit', function (e) {
         e.preventDefault();
         const newData = {
-            title: document.getElementById(addFormTitle).value.trim(),
-            authors: document.getElementById(addFormAuthors).value.trim(),
-            journal: document.getElementById(addFormJournal).value.trim(),
-            year: parseInt(document.getElementById(addFormYear).value, 10),
+            'first-name': document.getElementById(addFormFirstName).value.trim(),
+            'last-name': document.getElementById(addFormLastName).value.trim(),
         };
-        addArticleData(newData);
+        addAuthorData(newData);
     });
-
-    const cancelEditBtnElement = document.getElementById(cancelEdit);
-    cancelEditBtnElement.addEventListener('click', hideEditForm);
-    const editArticleFormElement = document.getElementById(editArticleForm);
-    editArticleFormElement.addEventListener('submit', function (e) {
-        e.preventDefault();
-        const updatedData = {
-            id: document.getElementById(editFormId).value.trim(),
-            title: document.getElementById(editFormTitle).value.trim(),
-            authors: document.getElementById(editFormAuthors).value.trim(),
-            journal: document.getElementById(editFormJournal).value.trim(),
-            year: parseInt(document.getElementById(editFormYear).value, 10),
-        };
-        updateArticleData(updatedData);
-    });
-
-    const closeViewBtnElement = document.getElementById(closeView);
-    closeViewBtnElement.addEventListener('click', hideViewForm);
 
     const tableColumns = [
         {
@@ -74,33 +34,17 @@ document.addEventListener('DOMContentLoaded', () => {
             headerFilter: 'input'
         },
         {
-            title: 'Title',
-            field: 'title',
+            title: 'First Name',
+            field: 'first-name',
             widthGrow: 3,
             editor: 'input',
             headerFilter: 'input'
         },
         {
-            title: 'Author(s)',
-            field: 'authors',
-            widthGrow: 2,
+            title: 'Last Name',
+            field: 'last-name',
+            widthGrow: 3,
             editor: 'input',
-            headerFilter: 'input'
-        },
-        {
-            title: 'Journal',
-            field: 'journal',
-            widthGrow: 2,
-            editor: 'input',
-            headerFilter: 'input'
-        },
-        {
-            title: 'Year',
-            field: 'year',
-            width: 100,
-            hozAlign: 'center',
-            editor: 'input',
-            sorter: 'number',
             headerFilter: 'input'
         },
         {
@@ -113,30 +57,26 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     ];
 
-    const table = new Tabulator('#article-table', {
+    const table = new Tabulator('#author-table', {
         index: 'id',
         height: '400px',
         layout: 'fitData',
         columns: tableColumns,
-        ajaxURL: '/api/article',
+        ajaxURL: '/api/author',
         ajaxProgressiveLoad: 'scroll',
         pagination: 'local',
         paginationSize: 10,
         movableColumns: true,
-        cellEdited: cell => {
-            console.log('Cell edited:', cell.getField(), 'New value:', cell.getValue());
-            updateArticleData(cell.getRow().getData());
-        }
     });
 
 });
 
-const addArticleData = articleData => {
-    console.log('Adding article:', articleData);
-    fetch('/api/article', {
+const addAuthorData = authorData => {
+    console.log('Adding author:', authorData);
+    fetch('/api/author', {
         method: 'POST',
         headers: {'Content-Type': 'application/json',},
-        body: JSON.stringify(articleData)
+        body: JSON.stringify(authorData)
     })
         .then(response => {
             if (!response.ok) {
@@ -144,53 +84,22 @@ const addArticleData = articleData => {
             }
             return response.json();
         })
-        .then(newArticle => {
-            console.log('Article added successfully:', newArticle);
-            Tabulator.findTable('#article-table')[0].setData();
+        .then(newAuthor => {
+            console.log('Author added successfully:', newAuthor);
+            Tabulator.findTable('#author-table')[0].setData();
             hideAddForm();
         })
         .catch(error => {
-            console.error('Error adding article:', error);
-            alert('Error adding article. See console for details.');
+            console.error('Error adding author:', error);
+            alert('Error adding author. See console for details.');
             hideAddForm();
         });
 }
 
-const updateArticleData = updatedRowData => {
-    const articleId = updatedRowData.id;
-    if (!articleId) {
-        console.error('Cannot update row without ID');
-        return;
-    }
-    console.log(`Updating article ${articleId}:`, updatedRowData);
-    const tableElement = Tabulator.findTable('#article-table')[0];
-    fetch(`/api/article/${articleId}`, {
-        method: 'PUT',
-        headers: {'Content-Type': 'application/json',},
-        body: JSON.stringify(updatedRowData)
-    })
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('Network response was not ok ' + response.statusText);
-            }
-            return response.json();
-        })
-        .then(updatedArticle => {
-            console.log('Article updated successfully:', updatedArticle);
-            tableElement.updateRow(articleId, updatedArticle);
-            hideEditForm();
-        })
-        .catch(error => {
-            console.error('Error updating article:', error);
-            alert('Error updating article. See console for details.');
-            hideEditForm();
-        });
-}
-
-const deleteArticle = id => {
-    if (confirm(`Are you sure you want to delete article ID: ${id}?`)) {
-        console.log(`Deleting article ${id}`);
-        fetch(`/api/article/${id}`, {
+const deleteAuthor = id => {
+    if (confirm(`Are you sure you want to delete author ID: ${id}?`)) {
+        console.log(`Deleting author ${id}`);
+        fetch(`/api/author/${id}`, {
             method: 'DELETE',
             headers: {}
         })
@@ -200,89 +109,37 @@ const deleteArticle = id => {
                 }
             })
             .then(() => {
-                console.log('Article deleted successfully');
-                const table = Tabulator.findTable('#article-table')[0];
+                console.log('Author deleted successfully');
+                const table = Tabulator.findTable('#author-table')[0];
                 table.deleteRow(id);
             })
             .catch(error => {
-                console.error('Error deleting article:', error);
-                alert('Error deleting article. See console for details.');
+                console.error('Error deleting author:', error);
+                alert('Error deleting author. See console for details.');
             });
     }
 }
 
 const showAddForm = () => {
     document.getElementById(formBackdrop).style.display = 'block';
-    document.getElementById(addArticleFormContainer).style.display = 'block';
-}
-
-const showEditForm = rowData => {
-    document.getElementById(formBackdrop).style.display = 'block';
-    document.getElementById(editFormId).value = rowData.id;
-    document.getElementById(editFormTitle).value = rowData.title;
-    document.getElementById(editFormAuthors).value = rowData.authors;
-    document.getElementById(editFormJournal).value = rowData.journal;
-    document.getElementById(editFormYear).value = rowData.year;
-    document.getElementById(editArticleFormContainer).style.display = 'block';
-}
-
-const showViewForm = rowData => {
-    document.getElementById(formBackdrop).style.display = 'block';
-    document.getElementById(viewArticleFormId).value = rowData.id;
-    document.getElementById(viewArticleFormTitle).value = rowData.title;
-    document.getElementById(viewArticleFormAuthors).value = rowData.authors;
-    document.getElementById(viewArticleFormJournal).value = rowData.journal;
-    document.getElementById(viewArticleFormYear).value = rowData.year;
-    document.getElementById(viewArticleFormContainer).style.display = 'block';
+    document.getElementById(addAuthorFormContainer).style.display = 'block';
 }
 
 const hideAddForm = () => {
     document.getElementById(formBackdrop).style.display = 'none';
-    document.getElementById(addArticleFormContainer).style.display = 'none';
-    document.getElementById(addArticleForm).reset();
-}
-
-
-const hideEditForm = () => {
-    document.getElementById(formBackdrop).style.display = 'none';
-    document.getElementById(editArticleFormContainer).style.display = 'none';
-    document.getElementById(editArticleForm).reset();
-}
-
-const hideViewForm = () => {
-    document.getElementById(formBackdrop).style.display = 'none';
-    document.getElementById(viewArticleFormContainer).style.display = 'none';
-    document.getElementById(viewArticleForm).reset();
+    document.getElementById(addAuthorFormContainer).style.display = 'none';
+    document.getElementById(addAuthorForm).reset();
 }
 
 const actionsContainer = cell => {
     const rowData = cell.getRow().getData();
     const container = document.createElement('span');
 
-    const editBtn = document.createElement('button');
-    editBtn.textContent = 'Edit';
-    editBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        showEditForm(rowData);
-    });
-    container.appendChild(editBtn);
-
-    container.appendChild(document.createTextNode(' '));
-
-    const viewBtn = document.createElement('button');
-    viewBtn.textContent = 'View';
-    viewBtn.addEventListener('click', (e) => {
-        e.preventDefault();
-        showViewForm(rowData);
-    });
-    container.appendChild(document.createTextNode(' '));
-    container.appendChild(viewBtn);
-
     container.appendChild(document.createTextNode(' '));
 
     const delBtn = document.createElement('button');
     delBtn.textContent = 'Delete';
-    delBtn.addEventListener('click', () => deleteArticle(rowData.id));
+    delBtn.addEventListener('click', () => deleteAuthor(rowData.id));
     container.appendChild(delBtn);
 
     return container;

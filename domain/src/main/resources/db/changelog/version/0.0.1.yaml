@@ -97,6 +97,39 @@ databaseChangeLog:
             tableName: article
             columnNames: title, authors, journal, year
             constraintName: article_uq
+  - changeSet:
+      id: 1.35.0-3-ddl
+      author: ivolnov
+      changes:
+        - createTable:
+            tableName: author
+            columns:
+              - column:
+                  constraints:
+                    primaryKey: true
+                  name: id
+                  type: UUID
+              - column:
+                  name: first_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: last_name
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+        - addUniqueConstraint:
+            tableName: author
+            columnNames: first_name, last_name
+            constraintName: author_uq
+      rollback:
+        - dropUniqueConstraint:
+            tableName: author
+            constraintName: author_uq
+        - dropTable:
+            tableName: author
+
 
 
 

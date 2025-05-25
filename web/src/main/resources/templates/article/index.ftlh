@@ -4,7 +4,7 @@
     <meta charset="UTF-8"/>
     <title>Scientific Articles</title>
     <link href="../../lib/tabulator/css/tabulator_simple.css" rel="stylesheet">
-    <link href="../../article/article.css" rel="stylesheet">
+    <link href="../../article/index.css" rel="stylesheet">
     <link href="../../common/sidebar.css" rel="stylesheet">
     <script type="text/javascript" src="../../static/lib/tabulator/js/tabulator.js" defer></script>
     <script type="text/javascript" src="../../static/article/index.js" defer></script>

@@ -1,10 +1,8 @@
-package ua.com.ivolnov.sci_article_library.article;
+package ua.com.ivolnov.sci_article_library.author;
 
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Getter;
@@ -18,24 +16,17 @@ import static lombok.AccessLevel.NONE;
 @With
 @Builder
 @Value
-class ArticleDto {
+class AuthorDto {
 
     @Getter(NONE)
     @JsonProperty("id")
     String id;
     @Size(min = 1, max = 255)
-    @JsonProperty("title")
-    String title;
+    @JsonProperty("first-name")
+    String firstName;
     @Size(min = 1, max = 255)
-    @JsonProperty("authors")
-    String authors;
-    @Size(min = 1, max = 255)
-    @JsonProperty("journal")
-    String journal;
-    @Min(1900)
-    @Max(2100)
-    @JsonProperty("year")
-    Integer year;
+    @JsonProperty("last-name")
+    String lastName;
 
     UUID getId() {
         if (id == null) {

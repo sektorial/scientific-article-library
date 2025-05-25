@@ -10,7 +10,6 @@ import static java.util.stream.Collectors.toSet;
 @Component
 class ArticleMapper {
 
-
     ArticleDto toDto(final Article entity) {
         return ArticleDto.builder()
                 .id(entity.getId().toString())
@@ -20,7 +19,6 @@ class ArticleMapper {
                 .year(entity.getYear())
                 .build();
     }
-
 
     Set<ArticleDto> toDtos(final Collection<Article> entities) {
         return entities.stream()

@@ -31,9 +31,9 @@ class ArticleService {
         return mapper.toDtos(repository.findAll());
     }
 
-    ArticleDto findOne(final String uuid) throws EntityNotFound {
-        final Article article = repository.findById(UUID.fromString(uuid))
-                .orElseThrow(() -> new EntityNotFound("Article not found by uuid=" + uuid));
+    ArticleDto findOne(final String id) throws EntityNotFound {
+        final Article article = repository.findById(UUID.fromString(id))
+                .orElseThrow(() -> new EntityNotFound("Article not found by ID=" + id));
         return mapper.toDto(article);
     }
 
@@ -43,9 +43,9 @@ class ArticleService {
         return mapper.toDto(createdArticle);
     }
 
-    ArticleDto update(final String uuid, final ArticleDto articleDto) throws EntityNotFound {
+    ArticleDto update(final String id, final ArticleDto articleDto) throws EntityNotFound {
         if (!repository.existsById(articleDto.getId())) {
-            throw new EntityNotFound("Article not found by uuid=" + uuid);
+            throw new EntityNotFound("Article not found by ID=" + id);
         }
         final Article articleWithUpdates = mapper.toEntity(articleDto);
         final Article updatedArticle = repository.save(articleWithUpdates);
