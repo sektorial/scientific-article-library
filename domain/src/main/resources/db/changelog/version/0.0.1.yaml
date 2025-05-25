@@ -1,32 +1,102 @@
 databaseChangeLog:
-- changeSet:
+  - changeSet:
       id: 1.35.0-1-ddl
       author: ivolnov
       changes:
-          - createTable:
-                tableName: article
-                columns:
-                    - column:
-                          constraints:
-                              primaryKey: true
-                          name: id
-                          type: UUID
-                    - column:
-                          name: title
-                          type: VARCHAR(255)
-                    - column:
-                          name: authors
-                          type: VARCHAR(255)
-                    - column:
-                          name: journal
-                          type: VARCHAR(255)
-                    - column:
-                          name: year
-                          type: VARCHAR(4)
-          - addUniqueConstraint:
-                tableName: article
-                columnNames: title, authors, journal, year
-                constraintName: article_uq
+        - createTable:
+            tableName: article
+            columns:
+              - column:
+                  constraints:
+                    primaryKey: true
+                  name: id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: title
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: authors
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: journal
+                  type: VARCHAR(255)
+              - column:
+                  constraints:
+                    nullable: false
+                  name: year
+                  type: VARCHAR(4)
+        - addUniqueConstraint:
+            tableName: article
+            columnNames: title, authors, journal, year
+            constraintName: article_uq
       rollback:
-          - dropTable:
-                tableName: article
+        - dropTable:
+            tableName: article
+  - changeSet:
+      id: 1.35.0-2-ddl
+      author: ivolnov
+      changes:
+        - renameColumn:
+            tableName: article
+            oldColumnName: year
+            newColumnName: year_old
+            columnDataType: VARCHAR(4)
+        - addColumn:
+            tableName: article
+            columns:
+              - column:
+                  name: year
+                  type: INTEGER
+                  constraints:
+                    nullable: true
+        - sql:
+            dbms: postgresql
+            sql: UPDATE article SET year = year_old::INTEGER;
+        - addNotNullConstraint:
+            tableName: article
+            columnName: year
+        - dropUniqueConstraint:
+            tableName: article
+            constraintName: article_uq
+        - dropColumn:
+            tableName: article
+            columnName: year_old
+        - addUniqueConstraint:
+            tableName: article
+            columnNames: title, authors, journal, year
+            constraintName: article_uq
+      rollback:
+        - dropUniqueConstraint:
+            tableName: article
+            constraintName: article_uq
+        - renameColumn:
+            tableName: article
+            oldColumnName: year
+            newColumnName: year_int
+            columnDataType: INTEGER
+        - addColumn:
+            tableName: article
+            columns:
+              - column:
+                  name: year
+                  type: VARCHAR(4)
+                  constraints:
+                    nullable: false
+        - sql:
+            sql: UPDATE article SET year = year_int::VARCHAR;
+        - dropColumn:
+            tableName: article
+            columnName: year_int
+        - addUniqueConstraint:
+            tableName: article
+            columnNames: title, authors, journal, year
+            constraintName: article_uq
+
+
+

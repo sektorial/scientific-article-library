@@ -7,6 +7,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Size;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -41,8 +43,9 @@ class Article {
     @Size(min = 1, max = 255)
     @Column(name = "journal", nullable = false)
     private String journal;
-    @Size(min = 4, max = 4)
+    @Min(1900)
+    @Max(2100)
     @Column(name = "year", nullable = false)
-    private String year;
+    private Integer year;
 
 }

@@ -23,7 +23,7 @@ class ArticleService {
                 .title("This is a John Doe's article as of " + currentMillis)
                 .authors("John Doe")
                 .journal("Some journal")
-                .year("1999")
+                .year(1999)
                 .build());
     }
 
