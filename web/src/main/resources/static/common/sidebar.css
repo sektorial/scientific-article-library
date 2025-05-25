@@ -1,0 +1,7 @@
+#page-container {
+    display: flex;
+    min-height: 100vh;
+}
+#sidebar { width: 200px; /*…*/ }
+#main-content { flex: 1; /*…*/ }
+@media (max-width: 768px) { #sidebar { display: none; } }
