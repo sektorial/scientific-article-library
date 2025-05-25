@@ -1,34 +1,42 @@
-// Wait for the DOM to be ready
 const formBackdrop = 'form-backdrop';
-const addArticleForm = 'add-article-form';
-const addArticleFormContainer = 'add-article-form-container';
-const addArticleButton = 'add-article-button';
-const cancelAdd = 'cancel-add';
-const editArticleForm = 'edit-article-form';
-const editArticleFormContainer = 'edit-article-form-container';
-const cancelEdit = 'cancel-edit';
 
+const addArticleFormContainer = 'add-article-form-container';
+const addArticleForm = 'add-article-form';
+const addArticleButton = 'add-article-button';
 const addFormTitle = 'add-article-form-title';
 const addFormAuthors = 'add-article-form-authors';
 const addFormJournal = 'add-article-form-journal';
 const addFormYear = 'add-article-form-year';
+const cancelAdd = 'cancel-add';
 
+const editArticleFormContainer = 'edit-article-form-container';
+const editArticleForm = 'edit-article-form';
 const editFormId = 'edit-article-form-id';
 const editFormTitle = 'edit-article-form-title';
 const editFormAuthors = 'edit-article-form-authors';
 const editFormJournal = 'edit-article-form-journal';
 const editFormYear = 'edit-article-form-year';
+const cancelEdit = 'cancel-edit';
+
+const viewArticleFormContainer = 'view-article-form-container';
+const viewArticleForm = 'view-article-form';
+const viewArticleFormId = 'view-article-form-id';
+const viewArticleFormTitle = 'view-article-form-title';
+const viewArticleFormAuthors = 'view-article-form-authors';
+const viewArticleFormJournal = 'view-article-form-journal';
+const viewArticleFormYear = 'view-article-form-year';
+const closeView = 'close-view';
 
 document.addEventListener('DOMContentLoaded', function () {
 
-    const addBtnElement = document.getElementById(addArticleButton);
-    const cancelAddBtnElement = document.getElementById(cancelAdd);
     const backdropElement = document.getElementById(formBackdrop);
-    const addArticleFormElement = document.getElementById(addArticleForm);
-    addBtnElement.addEventListener('click', showAddForm);
-    cancelAddBtnElement.addEventListener('click', hideAddForm);
     backdropElement.addEventListener('click', hideAddForm);
 
+    const addBtnElement = document.getElementById(addArticleButton);
+    addBtnElement.addEventListener('click', showAddForm);
+    const cancelAddBtnElement = document.getElementById(cancelAdd);
+    cancelAddBtnElement.addEventListener('click', hideAddForm);
+    const addArticleFormElement = document.getElementById(addArticleForm);
     addArticleFormElement.addEventListener('submit', function (e) {
         e.preventDefault();
         const newData = {
@@ -42,10 +50,8 @@ document.addEventListener('DOMContentLoaded', function () {
     });
 
     const cancelEditBtnElement = document.getElementById(cancelEdit);
-    const editArticleFormElement = document.getElementById(editArticleForm);
-
     cancelEditBtnElement.addEventListener('click', hideEditForm);
-
+    const editArticleFormElement = document.getElementById(editArticleForm);
     editArticleFormElement.addEventListener('submit', function (e) {
         e.preventDefault();
         const updatedData = {
@@ -58,6 +64,9 @@ document.addEventListener('DOMContentLoaded', function () {
         // call your POST helper
         updateArticleData(updatedData);
     });
+
+    const closeViewBtnElement = document.getElementById(closeView);
+    closeViewBtnElement.addEventListener('click', hideViewForm);
 
     // --- Define Table Columns ---
     // Adjust 'field' to match the property names in your ScientificArticle domain object
@@ -122,6 +131,19 @@ document.addEventListener('DOMContentLoaded', function () {
                 // small spacer
                 container.appendChild(document.createTextNode(' '));
 
+                // — View button —
+                const viewBtn = document.createElement('button');
+                viewBtn.textContent = 'View';
+                viewBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    showViewForm(rowData);
+                });
+                container.appendChild(document.createTextNode(' ')); // space
+                container.appendChild(viewBtn);
+
+                // small spacer
+                container.appendChild(document.createTextNode(' '));
+
                 // — Delete button —
                 const delBtn = document.createElement('button');
                 delBtn.textContent = 'Delete';
@@ -161,7 +183,6 @@ document.addEventListener('DOMContentLoaded', function () {
 }); // End DOMContentLoaded
 
 // --- Helper Functions for CRUD Actions ---
-
 function addArticleData(articleData) {
     console.log('Adding article:', articleData);
     fetch('/api/article', {
@@ -193,6 +214,7 @@ function addArticleData(articleData) {
             hideAddForm();
         });
 }
+
 
 
 // Function to handle inline edit data submission (called from cellEdited)
@@ -268,17 +290,9 @@ function deleteArticle(id) {
     }
 }
 
-// Modal show/hide helpers
-
 function showAddForm() {
     document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(addArticleFormContainer).style.display = 'block';
-}
-
-function hideAddForm() {
-    document.getElementById(formBackdrop).style.display = 'none';
-    document.getElementById(addArticleFormContainer).style.display = 'none';
-    document.getElementById(addArticleForm).reset();
 }
 
 function showEditForm(rowData) {
@@ -291,10 +305,33 @@ function showEditForm(rowData) {
     document.getElementById(editArticleFormContainer).style.display = 'block';
 }
 
+function showViewForm(rowData) {
+    document.getElementById(formBackdrop).style.display = 'block';
+    document.getElementById(viewArticleFormId).value = rowData.id;
+    document.getElementById(viewArticleFormTitle).value = rowData.title;
+    document.getElementById(viewArticleFormAuthors).value = rowData.authors;
+    document.getElementById(viewArticleFormJournal).value = rowData.journal;
+    document.getElementById(viewArticleFormYear).value = rowData.year;
+    document.getElementById(viewArticleFormContainer).style.display = 'block';
+}
+
+
+function hideAddForm() {
+    document.getElementById(formBackdrop).style.display = 'none';
+    document.getElementById(addArticleFormContainer).style.display = 'none';
+    document.getElementById(addArticleForm).reset();
+}
+
 function hideEditForm() {
     document.getElementById(formBackdrop).style.display = 'none';
     document.getElementById(editArticleFormContainer).style.display = 'none';
     document.getElementById(editArticleForm).reset();
+}
+
+function hideViewForm() {
+    document.getElementById(formBackdrop).style.display = 'none';
+    document.getElementById(viewArticleFormContainer).style.display = 'none';
+    document.getElementById(viewArticleForm).reset();
 }
 
 // Example function to get CSRF token if using Spring Security
