@@ -15,11 +15,10 @@
     <name>Scientific Article Library</name>
     <description>Project for managing articles.</description>
     <modules>
+        <module>domain</module>
+        <module>service</module>
         <module>web</module>
         <module>it</module>
-        <module>rest</module>
-        <module>service</module>
-        <module>domain</module>
     </modules>
     <properties>
         <java.version>17</java.version>
@@ -71,6 +70,19 @@
                                 <version>${lombok.version}</version>
                             </path>
                         </annotationProcessorPaths>
+                    </configuration>
+                </plugin>
+
+                <!--Plugin for IT tests-->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-failsafe-plugin</artifactId>
+                    <configuration>
+                        <failIfNoTests>true</failIfNoTests>
+                        <skipTests>false</skipTests>
+                        <includes>
+                            <include>**/*IT.java</include>
+                        </includes>
                     </configuration>
                 </plugin>
             </plugins>

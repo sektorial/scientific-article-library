@@ -11,15 +11,13 @@
     <dependencies>
         <dependency>
             <groupId>ua.com.ivolnov</groupId>
-            <artifactId>rest</artifactId>
-            <version>0.0.1-SNAPSHOT</version>
+            <artifactId>service</artifactId>
+            <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
-
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-autoconfigure</artifactId>
@@ -28,23 +26,6 @@
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-freemarker</artifactId>
         </dependency>
-
-        <dependency>
-            <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-starter-test</artifactId>
-            <scope>test</scope>
-        </dependency>
     </dependencies>
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <mainClass>ua.com.ivolnov.sci_article_library.ScientificArticleLibraryApplication</mainClass>
-                </configuration>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

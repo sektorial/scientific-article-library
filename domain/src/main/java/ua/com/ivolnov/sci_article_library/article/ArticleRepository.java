@@ -1,18 +1,10 @@
 package ua.com.ivolnov.sci_article_library.article;
 
-import java.util.Optional;
-import java.util.Set;
+import java.util.UUID;
 
-interface ArticleRepository {
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.stereotype.Repository;
 
-    Set<ScientificArticle> findAll();
-
-    Optional<ScientificArticle> findOne(String uuid);
-
-    boolean exists(String uuid);
-
-    ScientificArticle save(ScientificArticle article);
-
-    void deleteById(String id);
-
+@Repository
+interface ArticleRepository extends JpaRepository<ScientificArticle, UUID> {
 }

@@ -13,11 +13,11 @@ class ArticleMapper {
 
     ScientificArticleDto toDto(final ScientificArticle entity) {
         return ScientificArticleDto.builder()
-                .uuid(entity.uuid())
-                .title(entity.title())
-                .authors(entity.authors())
-                .journal(entity.journal())
-                .year(entity.year())
+                .id(entity.getId().toString())
+                .title(entity.getTitle())
+                .authors(entity.getAuthors())
+                .journal(entity.getJournal())
+                .year(entity.getYear())
                 .build();
     }
 
@@ -30,11 +30,11 @@ class ArticleMapper {
 
     ScientificArticle toEntity(final ScientificArticleDto dto) {
         return ScientificArticle.builder()
-                .uuid(dto.uuid())
-                .title(dto.title())
-                .authors(dto.authors())
-                .journal(dto.journal())
-                .year(dto.year())
+                .id(dto.getId())
+                .title(dto.getTitle())
+                .authors(dto.getAuthors())
+                .journal(dto.getJournal())
+                .year(dto.getYear())
                 .build();
     }
 

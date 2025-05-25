@@ -3,7 +3,23 @@ spring:
     template-loader-path: classpath:/templates
     expose-request-attributes: on
     suffix: .ftlh
+  datasource:
+    jdbcUrl: jdbc:postgresql://localhost:5432/sci_article
+    username: admin
+    password: admin
+    driver-class-name: org.postgresql.Driver
+  jpa:
+    hibernate:
+      ddl-auto: none
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  liquibase:
+    change-log: classpath:db/changelog/root.yaml
+    enabled: true
 
 springdoc:
   api-docs:
     path: /api-docs
+

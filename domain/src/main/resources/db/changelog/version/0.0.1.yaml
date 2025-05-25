@@ -1,0 +1,32 @@
+databaseChangeLog:
+- changeSet:
+      id: 1.35.0-1-ddl
+      author: ivolnov
+      changes:
+          - createTable:
+                tableName: article
+                columns:
+                    - column:
+                          constraints:
+                              primaryKey: true
+                          name: id
+                          type: UUID
+                    - column:
+                          name: title
+                          type: VARCHAR(255)
+                    - column:
+                          name: authors
+                          type: VARCHAR(255)
+                    - column:
+                          name: journal
+                          type: VARCHAR(255)
+                    - column:
+                          name: year
+                          type: VARCHAR(4)
+          - addUniqueConstraint:
+                tableName: article
+                columnNames: title, authors, journal, year
+                constraintName: article_uq
+      rollback:
+          - dropTable:
+                tableName: article
