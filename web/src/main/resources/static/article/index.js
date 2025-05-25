@@ -13,7 +13,7 @@ const addFormAuthors = 'add-article-form-authors';
 const addFormJournal = 'add-article-form-journal';
 const addFormYear = 'add-article-form-year';
 
-const editFormUuid = 'edit-article-form-uuid';
+const editFormId = 'edit-article-form-id';
 const editFormTitle = 'edit-article-form-title';
 const editFormAuthors = 'edit-article-form-authors';
 const editFormJournal = 'edit-article-form-journal';
@@ -49,7 +49,7 @@ document.addEventListener('DOMContentLoaded', function () {
     editArticleFormElement.addEventListener('submit', function (e) {
         e.preventDefault();
         const updatedData = {
-            uuid: document.getElementById(editFormUuid).value.trim(),
+            id: document.getElementById(editFormId).value.trim(),
             title: document.getElementById(editFormTitle).value.trim(),
             authors: document.getElementById(editFormAuthors).value.trim(),
             journal: document.getElementById(editFormJournal).value.trim(),
@@ -63,12 +63,12 @@ document.addEventListener('DOMContentLoaded', function () {
     // Adjust 'field' to match the property names in your ScientificArticle domain object
     const tableColumns = [
         {
-            title: 'UUID',
-            field: 'uuid',
+            title: 'ID',
+            field: 'id',
             width: 80,
             hozAlign: 'center',
             headerFilter: 'input'
-        }, // Assuming 'uuid' field exists
+        }, // Assuming 'id' field exists
         {
             title: 'Title',
             field: 'title',
@@ -125,7 +125,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 // — Delete button —
                 const delBtn = document.createElement('button');
                 delBtn.textContent = 'Delete';
-                delBtn.addEventListener('click', () => deleteArticle(rowData.uuid));
+                delBtn.addEventListener('click', () => deleteArticle(rowData.id));
                 container.appendChild(delBtn);
 
                 // return the element; Tabulator will insert it into the cell
@@ -140,7 +140,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // --- Initialize Tabulator ---
     const table = new Tabulator('#article-table', {
-        index: 'uuid',
+        index: 'id',
         height: '400px', // Optional: Set table height
         layout: 'fitData', // Adjust layout as needed
         columns: tableColumns,
@@ -198,10 +198,10 @@ function addArticleData(articleData) {
 // Function to handle inline edit data submission (called from cellEdited)
 // Or call this after submitting an Edit Modal/Form
 function updateArticleData(updatedRowData) {
-    const articleId = updatedRowData.uuid;
+    const articleId = updatedRowData.id;
     if (!articleId) {
-        console.error('Cannot update row without UUID');
-        return; // Don't try to update if UUID is missing (e.g., a newly added unsaved row)
+        console.error('Cannot update row without ID');
+        return; // Don't try to update if ID is missing (e.g., a newly added unsaved row)
     }
     console.log(`Updating article ${articleId}:`, updatedRowData);
 
@@ -237,10 +237,10 @@ function updateArticleData(updatedRowData) {
 }
 
 // Function called by the Delete button in the actions column
-function deleteArticle(uuid) {
-    if (confirm(`Are you sure you want to delete article UUID: ${uuid}?`)) {
-        console.log(`Deleting article ${uuid}`);
-        fetch(`/api/article/${uuid}`, {
+function deleteArticle(id) {
+    if (confirm(`Are you sure you want to delete article ID: ${id}?`)) {
+        console.log(`Deleting article ${id}`);
+        fetch(`/api/article/${id}`, {
             method: 'DELETE',
             headers: {
                 // Add CSRF token header if needed
@@ -259,7 +259,7 @@ function deleteArticle(uuid) {
                 console.log('Article deleted successfully');
                 // Remove the row from the table
                 const table = Tabulator.findTable('#article-table')[0];
-                table.deleteRow(uuid);
+                table.deleteRow(id);
             })
             .catch(error => {
                 console.error('Error deleting article:', error);
@@ -283,7 +283,7 @@ function hideAddForm() {
 
 function showEditForm(rowData) {
     document.getElementById(formBackdrop).style.display = 'block';
-    document.getElementById(editFormUuid).value = rowData.uuid;
+    document.getElementById(editFormId).value = rowData.id;
     document.getElementById(editFormTitle).value = rowData.title;
     document.getElementById(editFormAuthors).value = rowData.authors;
     document.getElementById(editFormJournal).value = rowData.journal;

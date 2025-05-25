@@ -92,8 +92,8 @@
 <div id="edit-article-form-container">
     <h3>Edit Article</h3>
     <form id="edit-article-form">
-        <label for="edit-article-form-uuid">UUID</label>
-        <input type="text" id="edit-article-form-uuid" name="title" required />
+        <label for="edit-article-form-id">ID</label>
+        <input type="text" id="edit-article-form-id" name="title" required />
         <label for="edit-article-form-title">Title</label>
         <input type="text" id="edit-article-form-title" name="title" placeholder="Article title…" required />
 

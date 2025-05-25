@@ -19,7 +19,7 @@ class ArticleService {
     @PostConstruct
     public void init() {
         final long currentMillis = Instant.now().toEpochMilli();
-        repository.save(ScientificArticle.builder()
+        repository.save(Article.builder()
                 .title("This is a John Doe's article as of " + currentMillis)
                 .authors("John Doe")
                 .journal("Some journal")
@@ -27,28 +27,28 @@ class ArticleService {
                 .build());
     }
 
-    Set<ScientificArticleDto> findAll() {
+    Set<ArticleDto> findAll() {
         return mapper.toDtos(repository.findAll());
     }
 
-    ScientificArticleDto findOne(final String uuid) throws EntityNotFound {
-        final ScientificArticle article = repository.findById(UUID.fromString(uuid))
+    ArticleDto findOne(final String uuid) throws EntityNotFound {
+        final Article article = repository.findById(UUID.fromString(uuid))
                 .orElseThrow(() -> new EntityNotFound("Article not found by uuid=" + uuid));
         return mapper.toDto(article);
     }
 
-    ScientificArticleDto create(final ScientificArticleDto articleDto) {
-        final ScientificArticle newArticle = mapper.toEntity(articleDto);
-        final ScientificArticle createdArticle = repository.save(newArticle);
+    ArticleDto create(final ArticleDto articleDto) {
+        final Article newArticle = mapper.toEntity(articleDto);
+        final Article createdArticle = repository.save(newArticle);
         return mapper.toDto(createdArticle);
     }
 
-    ScientificArticleDto update(final String uuid, final ScientificArticleDto articleDto) throws EntityNotFound {
+    ArticleDto update(final String uuid, final ArticleDto articleDto) throws EntityNotFound {
         if (!repository.existsById(articleDto.getId())) {
             throw new EntityNotFound("Article not found by uuid=" + uuid);
         }
-        final ScientificArticle articleWithUpdates = mapper.toEntity(articleDto);
-        final ScientificArticle updatedArticle = repository.save(articleWithUpdates);
+        final Article articleWithUpdates = mapper.toEntity(articleDto);
+        final Article updatedArticle = repository.save(articleWithUpdates);
         return mapper.toDto(updatedArticle);
     }
 

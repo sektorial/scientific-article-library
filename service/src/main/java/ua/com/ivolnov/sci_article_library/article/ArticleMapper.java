@@ -11,8 +11,8 @@ import static java.util.stream.Collectors.toSet;
 class ArticleMapper {
 
 
-    ScientificArticleDto toDto(final ScientificArticle entity) {
-        return ScientificArticleDto.builder()
+    ArticleDto toDto(final Article entity) {
+        return ArticleDto.builder()
                 .id(entity.getId().toString())
                 .title(entity.getTitle())
                 .authors(entity.getAuthors())
@@ -22,14 +22,14 @@ class ArticleMapper {
     }
 
 
-    Set<ScientificArticleDto> toDtos(final Collection<ScientificArticle> entities) {
+    Set<ArticleDto> toDtos(final Collection<Article> entities) {
         return entities.stream()
                 .map(this::toDto)
                 .collect(toSet());
     }
 
-    ScientificArticle toEntity(final ScientificArticleDto dto) {
-        return ScientificArticle.builder()
+    Article toEntity(final ArticleDto dto) {
+        return Article.builder()
                 .id(dto.getId())
                 .title(dto.getTitle())
                 .authors(dto.getAuthors())

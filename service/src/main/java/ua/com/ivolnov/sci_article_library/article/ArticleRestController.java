@@ -28,27 +28,27 @@ class ArticleRestController {
 
     @GetMapping
     @ResponseStatus(HttpStatus.OK)
-    public Set<ScientificArticleDto> getAllArticles() {
+    public Set<ArticleDto> getAllArticles() {
         return articleService.findAll();
     }
 
     @GetMapping("/{uuid}")
     @ResponseStatus(HttpStatus.OK)
-    public ScientificArticleDto getArticleById(@PathVariable @NotBlank final String uuid) throws EntityNotFound {
+    public ArticleDto getArticleById(@PathVariable @NotBlank final String uuid) throws EntityNotFound {
         return articleService.findOne(uuid);
     }
 
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ScientificArticleDto createArticle(@RequestBody @Valid final ScientificArticleDto articleDto) {
+    public ArticleDto createArticle(@RequestBody @Valid final ArticleDto articleDto) {
         return articleService.create(articleDto);
     }
 
     @PutMapping("/{uuid}")
     @ResponseStatus(HttpStatus.OK)
-    public ScientificArticleDto updateArticle(@PathVariable @NotBlank final String uuid,
-                                              @RequestBody @Valid final ScientificArticleDto articleDto)
+    public ArticleDto updateArticle(@PathVariable @NotBlank final String uuid,
+                                    @RequestBody @Valid final ArticleDto articleDto)
             throws EntityNotFound {
         return articleService.update(uuid, articleDto);
     }

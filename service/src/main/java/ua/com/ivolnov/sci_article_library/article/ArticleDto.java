@@ -15,10 +15,10 @@ import static lombok.AccessLevel.NONE;
 @With
 @Builder
 @Value
-class ScientificArticleDto {
+class ArticleDto {
 
     @Getter(NONE)
-    @JsonProperty("uuid")
+    @JsonProperty("id")
     String id;
     @JsonProperty("title")
     String title;

@@ -5,11 +5,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
-@RequestMapping("/web")
+@RequestMapping("/web/article")
 @Controller
-public class HelloWorldViewController {
+public class ArticleViewController {
 
-    @GetMapping("/article")
+    @GetMapping
     public ModelAndView index() {
         return new ModelAndView("article/index");
     }
