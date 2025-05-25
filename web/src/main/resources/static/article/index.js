@@ -27,8 +27,7 @@ const viewArticleFormJournal = 'view-article-form-journal';
 const viewArticleFormYear = 'view-article-form-year';
 const closeView = 'close-view';
 
-document.addEventListener('DOMContentLoaded', function () {
-
+document.addEventListener('DOMContentLoaded', () => {
     const backdropElement = document.getElementById(formBackdrop);
     backdropElement.addEventListener('click', hideAddForm);
 
@@ -45,7 +44,6 @@ document.addEventListener('DOMContentLoaded', function () {
             journal: document.getElementById(addFormJournal).value.trim(),
             year: parseInt(document.getElementById(addFormYear).value, 10),
         };
-        // call your POST helper
         addArticleData(newData);
     });
 
@@ -61,15 +59,12 @@ document.addEventListener('DOMContentLoaded', function () {
             journal: document.getElementById(editFormJournal).value.trim(),
             year: parseInt(document.getElementById(editFormYear).value, 10),
         };
-        // call your POST helper
         updateArticleData(updatedData);
     });
 
     const closeViewBtnElement = document.getElementById(closeView);
     closeViewBtnElement.addEventListener('click', hideViewForm);
 
-    // --- Define Table Columns ---
-    // Adjust 'field' to match the property names in your ScientificArticle domain object
     const tableColumns = [
         {
             title: 'ID',
@@ -77,28 +72,28 @@ document.addEventListener('DOMContentLoaded', function () {
             width: 80,
             hozAlign: 'center',
             headerFilter: 'input'
-        }, // Assuming 'id' field exists
+        },
         {
             title: 'Title',
             field: 'title',
             widthGrow: 3,
             editor: 'input',
             headerFilter: 'input'
-        }, // 'title' field, editable input
+        },
         {
             title: 'Author(s)',
             field: 'authors',
             widthGrow: 2,
             editor: 'input',
             headerFilter: 'input'
-        }, // 'authors' field
+        },
         {
             title: 'Journal',
             field: 'journal',
             widthGrow: 2,
             editor: 'input',
             headerFilter: 'input'
-        }, // 'journal' field
+        },
         {
             title: 'Year',
             field: 'year',
@@ -107,91 +102,40 @@ document.addEventListener('DOMContentLoaded', function () {
             editor: 'input',
             sorter: 'number',
             headerFilter: 'input'
-        }, // 'year' field
-        // --- Add Action Buttons ---
+        },
         {
             title: 'Actions',
             hozAlign: 'center',
-            formatter: function (cell, formatterParams, onRendered) {
-                // grab the row’s data object
-                const rowData = cell.getRow().getData();
-
-                // make a container for the buttons
-                const container = document.createElement('span');
-
-                // — Edit button —
-                const editBtn = document.createElement('button');
-                editBtn.textContent = 'Edit';
-                editBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showEditForm(rowData);
-                });
-                container.appendChild(editBtn);
-
-                // small spacer
-                container.appendChild(document.createTextNode(' '));
-
-                // — View button —
-                const viewBtn = document.createElement('button');
-                viewBtn.textContent = 'View';
-                viewBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    showViewForm(rowData);
-                });
-                container.appendChild(document.createTextNode(' ')); // space
-                container.appendChild(viewBtn);
-
-                // small spacer
-                container.appendChild(document.createTextNode(' '));
-
-                // — Delete button —
-                const delBtn = document.createElement('button');
-                delBtn.textContent = 'Delete';
-                delBtn.addEventListener('click', () => deleteArticle(rowData.id));
-                container.appendChild(delBtn);
-
-                // return the element; Tabulator will insert it into the cell
-                return container;
-            },
-            cellClick: function (e, cell) {
-                // Prevent click event from triggering edit on the action cell itself
+            formatter: cell => actionsContainer(cell),
+            cellClick: e => {
                 e.stopPropagation();
             }
         }
     ];
 
-    // --- Initialize Tabulator ---
     const table = new Tabulator('#article-table', {
         index: 'id',
-        height: '400px', // Optional: Set table height
-        layout: 'fitData', // Adjust layout as needed
+        height: '400px',
+        layout: 'fitData',
         columns: tableColumns,
-        ajaxURL: '/api/article', // URL to fetch initial data (GET request)
-        ajaxProgressiveLoad: 'scroll', // Optional: Load data as user scrolls
-        pagination: 'local',        // Optional: Add local pagination
-        paginationSize: 10,         // Optional: Rows per page
-        movableColumns: true,       // Optional: Allow column reordering
-        // --- Enable data editing feedback ---
-        cellEdited: function (cell) {
-            // Called after a cell has been successfully edited
+        ajaxURL: '/api/article',
+        ajaxProgressiveLoad: 'scroll',
+        pagination: 'local',
+        paginationSize: 10,
+        movableColumns: true,
+        cellEdited: cell => {
             console.log('Cell edited:', cell.getField(), 'New value:', cell.getValue());
-            // You MUST now trigger the update to the backend here if using inline editing directly
-            updateArticleData(cell.getRow().getData()); // See function below
+            updateArticleData(cell.getRow().getData());
         }
     });
 
-}); // End DOMContentLoaded
+});
 
-// --- Helper Functions for CRUD Actions ---
-function addArticleData(articleData) {
+const addArticleData = articleData => {
     console.log('Adding article:', articleData);
     fetch('/api/article', {
         method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            // Add CSRF token header if Spring Security CSRF protection is enabled
-            // 'X-CSRF-TOKEN': getCsrfToken() // You'd need a function to get the token
-        },
+        headers: {'Content-Type': 'application/json',},
         body: JSON.stringify(articleData)
     })
         .then(response => {
@@ -202,10 +146,7 @@ function addArticleData(articleData) {
         })
         .then(newArticle => {
             console.log('Article added successfully:', newArticle);
-            // Refresh the table data to show the new article
-            // Tabulator might add the row automatically if configured, otherwise:
-            Tabulator.findTable('#article-table')[0].setData(); // Reload data
-            // Or: Tabulator.findTable("#article-table")[0].addRow(newArticle, true); // Add row directly
+            Tabulator.findTable('#article-table')[0].setData();
             hideAddForm();
         })
         .catch(error => {
@@ -215,40 +156,28 @@ function addArticleData(articleData) {
         });
 }
 
-
-
-// Function to handle inline edit data submission (called from cellEdited)
-// Or call this after submitting an Edit Modal/Form
-function updateArticleData(updatedRowData) {
+const updateArticleData = updatedRowData => {
     const articleId = updatedRowData.id;
     if (!articleId) {
         console.error('Cannot update row without ID');
-        return; // Don't try to update if ID is missing (e.g., a newly added unsaved row)
+        return;
     }
     console.log(`Updating article ${articleId}:`, updatedRowData);
-
     const tableElement = Tabulator.findTable('#article-table')[0];
     fetch(`/api/article/${articleId}`, {
         method: 'PUT',
-        headers: {
-            'Content-Type': 'application/json',
-            // Add CSRF token header if needed
-            // 'X-CSRF-TOKEN': getCsrfToken()
-        },
+        headers: {'Content-Type': 'application/json',},
         body: JSON.stringify(updatedRowData)
     })
         .then(response => {
             if (!response.ok) {
-                // Maybe revert cell value in UI on failure?
                 throw new Error('Network response was not ok ' + response.statusText);
             }
             return response.json();
         })
         .then(updatedArticle => {
             console.log('Article updated successfully:', updatedArticle);
-            // Tabulator's inline edit might already reflect the change visually.
-            // If using a modal, you might need to refresh the row or table:
-            tableElement.updateRow(articleId, updatedArticle); // Update specific row
+            tableElement.updateRow(articleId, updatedArticle);
             hideEditForm();
         })
         .catch(error => {
@@ -258,28 +187,20 @@ function updateArticleData(updatedRowData) {
         });
 }
 
-// Function called by the Delete button in the actions column
-function deleteArticle(id) {
+const deleteArticle = id => {
     if (confirm(`Are you sure you want to delete article ID: ${id}?`)) {
         console.log(`Deleting article ${id}`);
         fetch(`/api/article/${id}`, {
             method: 'DELETE',
-            headers: {
-                // Add CSRF token header if needed
-                // 'X-CSRF-TOKEN': getCsrfToken()
-            }
+            headers: {}
         })
             .then(response => {
                 if (!response.ok) {
-                    // Check for specific statuses like 404 Not Found
-                    throw new Error('Network response w not ok ' + response.statusText);
+                    throw new Error('Network response was not ok ' + response.statusText);
                 }
-                // No content expected on successful DELETE (status 204)
-                return; // Or check for response.status === 204
             })
             .then(() => {
                 console.log('Article deleted successfully');
-                // Remove the row from the table
                 const table = Tabulator.findTable('#article-table')[0];
                 table.deleteRow(id);
             })
@@ -290,12 +211,12 @@ function deleteArticle(id) {
     }
 }
 
-function showAddForm() {
+const showAddForm = () => {
     document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(addArticleFormContainer).style.display = 'block';
 }
 
-function showEditForm(rowData) {
+const showEditForm = rowData => {
     document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(editFormId).value = rowData.id;
     document.getElementById(editFormTitle).value = rowData.title;
@@ -305,7 +226,7 @@ function showEditForm(rowData) {
     document.getElementById(editArticleFormContainer).style.display = 'block';
 }
 
-function showViewForm(rowData) {
+const showViewForm = rowData => {
     document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(viewArticleFormId).value = rowData.id;
     document.getElementById(viewArticleFormTitle).value = rowData.title;
@@ -315,26 +236,60 @@ function showViewForm(rowData) {
     document.getElementById(viewArticleFormContainer).style.display = 'block';
 }
 
-
-function hideAddForm() {
+const hideAddForm = () => {
     document.getElementById(formBackdrop).style.display = 'none';
     document.getElementById(addArticleFormContainer).style.display = 'none';
     document.getElementById(addArticleForm).reset();
 }
 
-function hideEditForm() {
+
+const hideEditForm = () => {
     document.getElementById(formBackdrop).style.display = 'none';
     document.getElementById(editArticleFormContainer).style.display = 'none';
     document.getElementById(editArticleForm).reset();
 }
 
-function hideViewForm() {
+const hideViewForm = () => {
     document.getElementById(formBackdrop).style.display = 'none';
     document.getElementById(viewArticleFormContainer).style.display = 'none';
     document.getElementById(viewArticleForm).reset();
 }
 
+const actionsContainer = cell => {
+    const rowData = cell.getRow().getData();
+    const container = document.createElement('span');
+
+    const editBtn = document.createElement('button');
+    editBtn.textContent = 'Edit';
+    editBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showEditForm(rowData);
+    });
+    container.appendChild(editBtn);
+
+    container.appendChild(document.createTextNode(' '));
+
+    const viewBtn = document.createElement('button');
+    viewBtn.textContent = 'View';
+    viewBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        showViewForm(rowData);
+    });
+    container.appendChild(document.createTextNode(' '));
+    container.appendChild(viewBtn);
+
+    container.appendChild(document.createTextNode(' '));
+
+    const delBtn = document.createElement('button');
+    delBtn.textContent = 'Delete';
+    delBtn.addEventListener('click', () => deleteArticle(rowData.id));
+    container.appendChild(delBtn);
+
+    return container;
+}
+
 // Example function to get CSRF token if using Spring Security
+
 // function getCsrfToken() {
 //    const token = document.querySelector('meta[name="_csrf"]').getAttribute('content');
 //    const header = document.querySelector('meta[name="_csrf_header"]').getAttribute('content');
