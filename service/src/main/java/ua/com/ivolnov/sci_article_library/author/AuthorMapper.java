@@ -8,7 +8,19 @@ import org.springframework.stereotype.Component;
 import static java.util.stream.Collectors.toSet;
 
 @Component
-class AuthorMapper {
+public class AuthorMapper {
+
+    public Set<AuthorDto> toDtos(final Collection<Author> entities) {
+        return entities.stream()
+                .map(this::toDto)
+                .collect(toSet());
+    }
+
+    public Set<Author> toEntities(final Collection<AuthorDto> dtos) {
+        return dtos.stream()
+                .map(this::toEntity)
+                .collect(toSet());
+    }
 
     AuthorDto toDto(final Author entity) {
         return AuthorDto.builder()
@@ -18,15 +30,9 @@ class AuthorMapper {
                 .build();
     }
 
-    Set<AuthorDto> toDtos(final Collection<Author> entities) {
-        return entities.stream()
-                .map(this::toDto)
-                .collect(toSet());
-    }
-
     Author toEntity(final AuthorDto dto) {
         return Author.builder()
-                .id(dto.getId())
+                .id(dto.getUuid())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())
                 .build();

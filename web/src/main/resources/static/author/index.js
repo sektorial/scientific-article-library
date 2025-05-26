@@ -19,8 +19,8 @@ document.addEventListener('DOMContentLoaded', () => {
     addAuthorFormElement.addEventListener('submit', function (e) {
         e.preventDefault();
         const newData = {
-            'first-name': document.getElementById(addFormFirstName).value.trim(),
-            'last-name': document.getElementById(addFormLastName).value.trim(),
+            'first_name': document.getElementById(addFormFirstName).value.trim(),
+            'last_name': document.getElementById(addFormLastName).value.trim(),
         };
         addAuthorData(newData);
     });
@@ -35,14 +35,14 @@ document.addEventListener('DOMContentLoaded', () => {
         },
         {
             title: 'First Name',
-            field: 'first-name',
+            field: 'first_name',
             widthGrow: 3,
             editor: 'input',
             headerFilter: 'input'
         },
         {
             title: 'Last Name',
-            field: 'last-name',
+            field: 'last_name',
             widthGrow: 3,
             editor: 'input',
             headerFilter: 'input'

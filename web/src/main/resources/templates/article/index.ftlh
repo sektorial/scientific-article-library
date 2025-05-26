@@ -6,8 +6,12 @@
     <link href="../../lib/tabulator/css/tabulator_simple.css" rel="stylesheet">
     <link href="../../article/index.css" rel="stylesheet">
     <link href="../../common/sidebar.css" rel="stylesheet">
+    <link rel="stylesheet" ref="https://cdn.jsdelivr.net/npm/choices.js/public/assets/styles/choices.min.css"/>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css"/>
     <script type="text/javascript" src="../../static/lib/tabulator/js/tabulator.js" defer></script>
     <script type="text/javascript" src="../../static/article/index.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/choices.js/public/assets/scripts/choices.min.js" defer></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify" defer></script>
 </head>
 
 <body>
@@ -26,8 +30,17 @@
                 <input type="text" id="add-article-form-title" name="title" placeholder="Article title…" required/>
 
                 <label for="add-article-form-authors">Author(s)</label>
-                <input type="text" id="add-article-form-authors" name="authors" placeholder="Lastname, Firstname; …"
-                       required/>
+                <input id="add-article-form-authors"
+                       name="authors"
+                       placeholder="Start typing to search authors…"
+                       autocomplete="off"/>
+                <!-- hidden select for JS data only -->
+                <label for="add-article-form-authors-select" style="display:none;"></label>
+                <select id="add-article-form-authors-select" style="display:none;">
+                    <#list allAuthors as author>
+                        <option value="${author.id}">${author.lastName}, ${author.firstName}</option>
+                    </#list>
+                </select>
 
                 <label for="add-article-form-journal">Journal</label>
                 <input type="text" id="add-article-form-journal" name="journal" placeholder="Journal name" required/>
@@ -51,8 +64,16 @@
                 <input type="text" id="edit-article-form-title" name="title" placeholder="Article title…" required/>
 
                 <label for="edit-article-form-authors">Author(s)</label>
-                <input type="text" id="edit-article-form-authors" name="authors" placeholder="Lastname, Firstname; …"
-                       required/>
+                <input id="edit-article-form-authors"
+                       name="authors"
+                       placeholder="Start typing to search authors…"
+                       autocomplete="off"    />
+                <label for="edit-article-form-authors-select" style="display:none"></label>
+                <select id="edit-article-form-authors-select" style="display:none;">
+                    <#list allAuthors as author>
+                        <option value="${author.id}">${author.lastName}, ${author.firstName}</option>
+                    </#list>
+                </select>
 
                 <label for="edit-article-form-journal">Journal</label>
                 <input type="text" id="edit-article-form-journal" name="journal" placeholder="Journal name" required/>
@@ -77,7 +98,11 @@
                 <input type="text" id="view-article-form-title" name="title" readonly/>
 
                 <label for="view-article-form-authors">Author(s)</label>
-                <input type="text" id="view-article-form-authors" name="authors" readonly/>
+                <textarea id="view-article-form-authors"
+                          name="authors"
+                          readonly
+                          rows="3"
+                          placeholder="Authors"></textarea>
 
                 <label for="view-article-form-journal">Journal</label>
                 <input type="text" id="view-article-form-journal" name="journal" readonly/>

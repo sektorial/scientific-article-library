@@ -129,7 +129,76 @@ databaseChangeLog:
             constraintName: author_uq
         - dropTable:
             tableName: author
-
-
-
-
+  - changeSet:
+      id: 1.35.0-4-dml
+      author: ivolnov
+      changes:
+        - delete:
+            tableName: article
+        - delete:
+            tableName: author
+  - changeSet:
+      id: 1.35.0-5-ddl
+      author: ivolnov
+      changes:
+        - dropUniqueConstraint:
+            tableName: article
+            constraintName: article_uq
+        - dropColumn:
+            tableName: article
+            columnName: authors
+        - addUniqueConstraint:
+            tableName: article
+            columnNames: title, journal, year
+            constraintName: article_uq
+      rollback:
+        - dropUniqueConstraint:
+            tableName: article
+            constraintName: article_uq
+        - addColumn:
+            tableName: article
+            columns:
+              - column:
+                  name: authors
+                  type: VARCHAR(255)
+        - addUniqueConstraint:
+            tableName: article
+            columnNames: title, authors, journal, year
+            constraintName: article_uq
+  - changeSet:
+      id: 1.35.0-6-ddl
+      author: ivolnov
+      changes:
+        - createTable:
+            tableName: article_author
+            columns:
+              - column:
+                  constraints:
+                    nullable: false
+                  name: article_id
+                  type: UUID
+              - column:
+                  constraints:
+                    nullable: false
+                  name: author_id
+                  type: uuid
+        - addPrimaryKey:
+            tableName: article_author
+            columnNames: article_id,author_id
+            constraintName: article_author_pk
+        - addForeignKeyConstraint:
+            baseTableName: article_author
+            baseColumnNames: article_id
+            constraintName: article_author_article_fk
+            referencedTableName: article
+            referencedColumnNames: id
+            onDelete: CASCADE
+        - addForeignKeyConstraint:
+            baseTableName: article_author
+            baseColumnNames: author_id
+            constraintName: article_author_author_fk
+            referencedTableName: author
+            referencedColumnNames: id
+      rollback:
+        - dropTable:
+            tableName: article_author

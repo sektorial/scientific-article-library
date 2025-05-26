@@ -1,5 +1,6 @@
 package ua.com.ivolnov.sci_article_library.article;
 
+import java.util.Set;
 import java.util.UUID;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
@@ -11,6 +12,7 @@ import lombok.Getter;
 import lombok.Value;
 import lombok.With;
 import lombok.extern.jackson.Jacksonized;
+import ua.com.ivolnov.sci_article_library.author.AuthorDto;
 
 import static lombok.AccessLevel.NONE;
 
@@ -28,7 +30,7 @@ class ArticleDto {
     String title;
     @Size(min = 1, max = 255)
     @JsonProperty("authors")
-    String authors;
+    Set<AuthorDto> authors;
     @Size(min = 1, max = 255)
     @JsonProperty("journal")
     String journal;

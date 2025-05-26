@@ -25,7 +25,7 @@ import static jakarta.persistence.GenerationType.AUTO;
 @EqualsAndHashCode(onlyExplicitlyIncluded = true)
 @NoArgsConstructor
 @AllArgsConstructor
-class Author {
+public class Author {
 
     @Id
     @GeneratedValue(strategy = AUTO)

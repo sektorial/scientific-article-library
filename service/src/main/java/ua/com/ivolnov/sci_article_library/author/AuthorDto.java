@@ -5,30 +5,26 @@ import java.util.UUID;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.validation.constraints.Size;
 import lombok.Builder;
-import lombok.Getter;
 import lombok.Value;
 import lombok.With;
 import lombok.extern.jackson.Jacksonized;
-
-import static lombok.AccessLevel.NONE;
 
 @Jacksonized
 @With
 @Builder
 @Value
-class AuthorDto {
+public class AuthorDto {
 
-    @Getter(NONE)
     @JsonProperty("id")
     String id;
     @Size(min = 1, max = 255)
-    @JsonProperty("first-name")
+    @JsonProperty("first_name")
     String firstName;
     @Size(min = 1, max = 255)
-    @JsonProperty("last-name")
+    @JsonProperty("last_name")
     String lastName;
 
-    UUID getId() {
+    UUID getUuid() {
         if (id == null) {
             return null;
         }

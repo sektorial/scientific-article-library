@@ -11,7 +11,7 @@ import ua.com.ivolnov.sci_article_library.common.exception.EntityNotFound;
 
 @Service
 @RequiredArgsConstructor
-class AuthorService {
+public class AuthorService {
 
     private final AuthorMapper mapper;
     private final AuthorRepository repository;
@@ -25,7 +25,7 @@ class AuthorService {
                 .build());
     }
 
-    Set<AuthorDto> findAll() {
+    public Set<AuthorDto> findAll() {
         return mapper.toDtos(repository.findAll());
     }
 
@@ -39,6 +39,10 @@ class AuthorService {
         final Author newAuthor = mapper.toEntity(authorDto);
         final Author createdAuthor = repository.save(newAuthor);
         return mapper.toDto(createdAuthor);
+    }
+
+    public Author save(final Author author) {
+        return repository.save(author);
     }
 
     void deleteById(final String id) {
