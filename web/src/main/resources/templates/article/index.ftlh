@@ -32,10 +32,9 @@
                 <label for="add-article-form-authors">Author(s)</label>
                 <input id="add-article-form-authors"
                        name="authors"
-                       placeholder="Start typing to search authors…"
-                       autocomplete="off"/>
+                       placeholder="Start typing to search authors…"/>
                 <!-- hidden select for JS data only -->
-                <label for="add-article-form-authors-select" style="display:none;"></label>
+                <label for="add-article-form-authors-select" style="display:none;">Author(s)</label>
                 <select id="add-article-form-authors-select" style="display:none;">
                     <#list allAuthors as author>
                         <option value="${author.id}">${author.lastName}, ${author.firstName}</option>
@@ -66,9 +65,9 @@
                 <label for="edit-article-form-authors">Author(s)</label>
                 <input id="edit-article-form-authors"
                        name="authors"
-                       placeholder="Start typing to search authors…"
-                       autocomplete="off"    />
-                <label for="edit-article-form-authors-select" style="display:none"></label>
+                       placeholder="Start typing to search authors…"/>
+                <!-- hidden select for JS data only -->
+                <label for="edit-article-form-authors-select" style="display:none;">Author(s)</label>
                 <select id="edit-article-form-authors-select" style="display:none;">
                     <#list allAuthors as author>
                         <option value="${author.id}">${author.lastName}, ${author.firstName}</option>

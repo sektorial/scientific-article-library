@@ -27,44 +27,54 @@ const viewArticleFormJournal = 'view-article-form-journal';
 const viewArticleFormYear = 'view-article-form-year';
 const closeView = 'close-view';
 
-let tagifyAdd, tagifyEdit;
+let tagifyAuthors;
 
 document.addEventListener('DOMContentLoaded', () => {
     configureTagify();
-    document.getElementById(formBackdrop).addEventListener('click', hideAddForm);
-    document.getElementById(addArticleButton).addEventListener('click', showAddForm);
-    document.getElementById(cancelAdd).addEventListener('click', hideAddForm);
-    document.getElementById(addArticleForm).addEventListener('submit', e => {
+
+    const backdropElement = document.getElementById(formBackdrop);
+    backdropElement.addEventListener('click', hideAddForm);
+
+    const addBtnElement = document.getElementById(addArticleButton);
+    addBtnElement.addEventListener('click', showAddForm);
+    const cancelAddBtnElement = document.getElementById(cancelAdd);
+    cancelAddBtnElement.addEventListener('click', hideAddForm);
+    const addArticleFormElement = document.getElementById(addArticleForm);
+    addArticleFormElement.addEventListener('submit', e => {
         e.preventDefault();
-        const authors = tagifyAdd.value.map(tag => ({
-            id: tagifyAdd.authorMap[tag.value]
+
+        const authors = tagifyAuthors.value.map(tagData => ({
+            id: tagifyAuthors.authorMap[tagData.value]
         }));
 
         const newData = {
-            title: document.getElementById('add-article-form-title').value.trim(),
+            title:   document.getElementById(addFormTitle).value.trim(),
             authors: authors,
-            journal: document.getElementById('add-article-form-journal').value.trim(),
-            year: parseInt(document.getElementById('add-article-form-year').value, 10),
+            journal: document.getElementById(addFormJournal).value.trim(),
+            year:    parseInt(document.getElementById(addFormYear).value, 10),
         };
         addArticleData(newData);
     });
-    document.getElementById(cancelEdit).addEventListener('click', hideEditForm);
-    document.getElementById(editArticleForm).addEventListener('submit', function (e) {
-        e.preventDefault();
-        const authors = tagifyEdit.value.map(tag => ({
-            id: tagifyEdit.authorMap[tag.value]
-        }));
 
+    const cancelEditBtnElement = document.getElementById(cancelEdit);
+    cancelEditBtnElement.addEventListener('click', hideEditForm);
+    const editArticleFormElement = document.getElementById(editArticleForm);
+    editArticleFormElement.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const authors = Array.from(document.getElementById(editFormAuthors).selectedOptions)
+            .map(option => option.value);
         const updatedData = {
-            id: document.getElementById('edit-article-form-id').value.trim(),
-            title: document.getElementById('edit-article-form-title').value.trim(),
-            authors: authors,
-            journal: document.getElementById('edit-article-form-journal').value.trim(),
-            year: parseInt(document.getElementById('edit-article-form-year').value, 10)
+            id: document.getElementById(editFormId).value.trim(),
+            title: document.getElementById(editFormTitle).value.trim(),
+            authors: authors.map(id => ({id})),
+            journal: document.getElementById(editFormJournal).value.trim(),
+            year: parseInt(document.getElementById(editFormYear).value, 10),
         };
         updateArticleData(updatedData);
     });
-    document.getElementById(closeView).addEventListener('click', hideViewForm);
+
+    const closeViewBtnElement = document.getElementById(closeView);
+    closeViewBtnElement.addEventListener('click', hideViewForm);
 
     const tableColumns = [
         {
@@ -215,38 +225,32 @@ const deleteArticle = id => {
 }
 
 const showAddForm = () => {
-    // clear any previous tags
-    tagifyAdd.removeAllTags();
-    if (tagifyAdd.dropdown) tagifyAdd.dropdown.hide();
-
-    // reset other fields if needed
-    document.getElementById('add-article-form-title').value = '';
-
-    // display modal
-    document.getElementById('form-backdrop').style.display = 'block';
-    document.getElementById('add-article-form-container').style.display = 'block';
+    if (!response.ok) throw new Error(`Failed to load authors: ${response.statusText}`);
+    tagifyAuthors.removeAllTags();
+    if (tagifyAuthors.dropdown) {
+        tagifyAuthors.dropdown.hide();
+    }
+    document.getElementById(addFormTitle).focus();
+    document.getElementById(formBackdrop).style.display = 'block';
+    document.getElementById(addArticleFormContainer).style.display = 'block';
 };
 
 const showEditForm = rowData => {
-    // Step 1: Fill all non-Tagify fields first
+    document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(editFormId).value = rowData.id;
     document.getElementById(editFormTitle).value = rowData.title;
+    const select = document.getElementById(editFormAuthors);
+    select.innerHTML = ''; // remove any old <option>s
+    (rowData.authors || []).forEach(author => {
+        const opt = document.createElement('option');
+        opt.value = author.id;
+        opt.textContent = `${author.last_name}, ${author.first_name}`;
+        opt.selected = true;                           // mark it selected
+        select.appendChild(opt);
+    });
     document.getElementById(editFormJournal).value = rowData.journal;
     document.getElementById(editFormYear).value = rowData.year;
-
-    // Step 2: Show modal first (to ensure Tagify is rendered in visible DOM)
-    document.getElementById(formBackdrop).style.display = 'block';
     document.getElementById(editArticleFormContainer).style.display = 'block';
-
-    // Step 3: Delay tag insert to next tick
-    setTimeout(() => {
-        tagifyEdit.removeAllTags();
-
-        const displayNames = (rowData.authors || [])
-            .map(author => `${author.last_name}, ${author.first_name}`);
-
-        tagifyEdit.addTags(displayNames);
-    }, 0);
 }
 
 const showViewForm = rowData => {
@@ -315,33 +319,36 @@ const actionsContainer = cell => {
 }
 
 const configureTagify = () => {
-    // Get data source only once
+    // 1) grab your hidden <select> for the raw data
     const selectEl = document.getElementById('add-article-form-authors-select');
-    if (!selectEl) return console.error('Tagify setup: missing hidden <select>');
+    if (!selectEl) {
+        console.error('configureTagify: no selectEl found');
+        return;
+    }
 
-    const authorMap = {}, names = [];
-    Array.from(selectEl.options).forEach(opt => {
-        const name = opt.textContent.trim();
-        authorMap[name] = opt.value;
-        names.push(name);
+    // 2) build a name→id map + an array of names
+    const authorMap   = {};
+    const authorNames = [];
+    Array.from(selectEl.options).forEach(o => {
+        const name = o.textContent.trim();
+        authorMap[name] = o.value;
+        authorNames.push(name);
     });
 
-    const tagifyOpts = {
-        whitelist: names,
+    // 3) hook Tagify onto your <input>
+    const inputEl = document.getElementById(addFormAuthors);
+    tagifyAuthors = new Tagify(inputEl, {
+        whitelist:        authorNames,
         enforceWhitelist: true,
-        dropdown: { enabled: 1, maxItems: 10, position: 'text' }
-    };
+        dropdown: {
+            enabled:   1,
+            maxItems: 10,
+            position: 'text'
+        }
+    });
 
-    // Destroy old instances if they exist
-    if (tagifyAdd) tagifyAdd.destroy();
-    if (tagifyEdit) tagifyEdit.destroy();
-
-    // Re-create Tagify instances
-    tagifyAdd = new Tagify(document.getElementById('add-article-form-authors-select'), tagifyOpts);
-    tagifyAdd.authorMap = authorMap;
-
-    tagifyEdit = new Tagify(document.getElementById('edit-article-form-authors-select'), tagifyOpts);
-    tagifyEdit.authorMap = authorMap;
+    // 4) store the map for later lookup
+    tagifyAuthors.authorMap = authorMap;
 };
 
 
